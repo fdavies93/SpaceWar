@@ -59,11 +59,11 @@ class LevelSol extends Level
 		moonOrbit.curAngle = Math.PI / 2;
 		moon.attachOrbit(moonOrbit);
 		
-		var curRock:Asteroid;
+		/*var curRock:Asteroid;
 		curRock = new Asteroid( -5e3, 0);
 		physicsGroup.add(curRock);
 		curRock = new Asteroid( 5e3, 0);
-		physicsGroup.add(curRock);
+		physicsGroup.add(curRock);*/
 		/*for (i in 0...5)
 		{
 			for (i2 in 0...5)
@@ -85,11 +85,11 @@ class LevelSol extends Level
 		northGate.setDestination("Andromeda", 0, 2500);
 		
 		physicsGroup.add(testShip);
-		//physicsGroup.add(sol);
-		//physicsGroup.add(earth);
+		physicsGroup.add(sol);
+		physicsGroup.add(earth);
 		//physicsGroup.add(northGate);
-		//physicsGroup.add(moon);
 		
+		physicsGroup.add(moon);
 		var repeatShip:objects.PlayerShip = new objects.PlayerShip(1500, 1500);
 		repeatShip.myAllegiance = 2;
 		repeatShip.name = "aiTest";
