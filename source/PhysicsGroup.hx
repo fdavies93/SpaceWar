@@ -1,4 +1,5 @@
 package;
+import flixel.group.FlxGroup;
 import flixel.group.FlxTypedGroup;
 import flixel.FlxG;
 import flixel.system.FlxQuadTree;
@@ -10,8 +11,7 @@ import flixel.util.FlxVector;
  */
 class PhysicsGroup extends FlxTypedGroup<NewtonianSprite> 
 {
-	public static var _pixelToKmScaleFactor:Float = 1e3;
-	public static var _gConstant:Float = 6.67408e-11;//mess with this for a smaller universe ;)
+	public static var _gConstant:Float = 6.67408e-20;//mess with this for a smaller universe ;)
 	//6.67408e-11 = REAL GRAVITATIONAL CONSTANT
 	public static var _maxSpeed:Float = 1000;//in px/s; a 'universal speed limit
 	public static var _gravitatorMass:Float = 1e18;//the cutoff point above which an object attracts other objects 
@@ -41,22 +41,39 @@ class PhysicsGroup extends FlxTypedGroup<NewtonianSprite>
 		{
 			observer.clearObservedList();
 		}
-		for (object in this)//naughty naughty, very naughty
+		
+		var object:NewtonianSprite;
+		var object2:NewtonianSprite;
+		
+		var i:Int = this.members.length-1;
+		var i2:Int = i-1;
+		
+		while(i >= 1)
 		{
-			for (object2 in this)
+			object = this.members[i];
+			while(i2 >= 0)
 			{
-				//gravity check
-				if (object._mass >= 1e18 && object2.gravityEnabled) object2.gravitateTowards(object); 
 				
-				//collision check
-				if (object.collisionsEnabled && object2.collisionsEnabled && object != object2)
+				object2 = this.members[i2];
+				
+				if (object != object2)
 				{
-					if (object.overlaps(object2)) {
-						object.onCollide(object2);
-						object2.onCollide(object);
+					//gravity check
+					if (object._mass >= 1e24 && object2.gravityEnabled) object2.gravitateTowards(object); 
+					
+					//collision check
+					if (object.collisionsEnabled && object2.collisionsEnabled)
+					{
+						if (object.overlaps(object2)) {
+							object.onCollide(object2);
+							object2.onCollide(object);
+						}
 					}
 				}
+				i2--;
 			}
+			i--;
+			i2 = i - 1;
 			
 			for (observer in spaceObservers)//might need refactoring
 			{
@@ -65,6 +82,21 @@ class PhysicsGroup extends FlxTypedGroup<NewtonianSprite>
 				else spaceObservers.remove(observer);
 			}
 		}
+		
+		/*for (object in this)//naughty naughty, very naughty
+		{
+			for (object2 in this)
+			{
+				
+			}
+			
+			for (observer in spaceObservers)//might need refactoring
+			{
+				if (observer.myController != null) observer.addObservedObject(object);
+				//this can be refined based on spacial division too
+				else spaceObservers.remove(observer);
+			}
+		}*/
 	}
 	
 	override public function add(Object:NewtonianSprite):NewtonianSprite 

@@ -2,10 +2,12 @@ package ;
 
 import flixel.effects.particles.FlxEmitter;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.FlxState;
 import flixel.util.FlxPoint;
 import flixel.util.FlxVector;
 import flixel.FlxG;
+import haxe.Log;
 using flixel.util.FlxSpriteUtil;
 using FlxPointExtender;
 
@@ -25,6 +27,7 @@ class NewtonianSprite extends FlxSprite
 	public var myAllegiance:Int;
 	public var myObservers:Array<ObjectObserver>;
 	public var internalFlags:Map<String,String>;
+	public var rigid:Bool;
 	
 	//CONTROL VARIABLES
 	private var myController:ObjectController;
@@ -45,6 +48,7 @@ class NewtonianSprite extends FlxSprite
 	public var name:String;
 	public var isPlayer:Bool;
 	public var wraps:Bool;
+	public var killMe:Bool;
 	
 	public var showInUI:Bool;
 	
@@ -61,6 +65,7 @@ class NewtonianSprite extends FlxSprite
 		myOrbit = null;
 		isPlayer = false;
 		showInUI = true;
+		killMe = false;
 		wraps = false;
 		name = "VOID";
 		ID = -1;
@@ -70,6 +75,7 @@ class NewtonianSprite extends FlxSprite
 		internalFlags = new Map<String, String>();
 		pixelPerfectRender = false;
 		spaceNode = null;
+		rigid = true;
 	}
 	
 	public function sendChatMessage(message:String)
@@ -97,9 +103,8 @@ class NewtonianSprite extends FlxSprite
 	
 	public function addForceVector(ForceVector:FlxVector):Void
 	{
-		var VelocityVector = new FlxVector(origin.x, origin.y);
-		VelocityVector.radians = ForceVector.radians;
-		VelocityVector.length = (ForceVector.length / _mass) / PhysicsGroup._pixelToKmScaleFactor;
+		var VelocityVector = ForceVector.clone();
+		VelocityVector.length = (ForceVector.length / _mass);
 		addVelocityVector(VelocityVector);
 	}
 	
@@ -112,7 +117,7 @@ class NewtonianSprite extends FlxSprite
 			// ^ these would become unnecessary if your vectors were aligned with the centre of your objects
 			var _gravityVector:FlxVector = new FlxVector(_curObjPos.x, _curObjPos.y);
 			_gravityVector.radians = Math.atan2(_baseObjPos.y - _curObjPos.y, _baseObjPos.x - _curObjPos.x); 
-			_gravityVector.length = PhysicsGroup._gConstant * ((Gravitator._mass * _mass) / (Math.pow(_baseObjPos.distanceTo(_curObjPos) * PhysicsGroup._pixelToKmScaleFactor, 2)));
+			_gravityVector.length = PhysicsGroup._gConstant * ((Gravitator._mass * _mass) / (Math.pow(_baseObjPos.distanceTo(_curObjPos), 2)));
 			/*if (Gravitator.name == "Sol" && name == "Player")
 			{
 				trace("Gravity on " + name + " from " + Gravitator.name + " is " + Math.round(_gravityVector.length) + "N");
@@ -126,31 +131,51 @@ class NewtonianSprite extends FlxSprite
 	
 	override public function update()
 	{
+		if (killMe == true)
+		{
+			myGroup.remove(this,true);
+			destroy();
+			super.destroy();
+		}
+		else{
 		if (myController != null) myController.onUpdate();
 		if (myWeapon != null) myWeapon.onUpdate();
 		if (myThrust != null) myThrust.onUpdate();
 		if (myOrbit != null) myOrbit.onUpdate();
 		//for(object in 
 		if (_moveVector.length > PhysicsGroup._maxSpeed) _moveVector.length = PhysicsGroup._maxSpeed;
-		if (_moveVector.dx >= 0) {
-			//trace("blah");
-			velocity.x = Math.pow(_moveVector.dx, 2) * _moveVector.length;
-		}
-		else {
-			velocity.x = Math.pow(_moveVector.dx, 2) * _moveVector.length * -1;
-		}
-		if (_moveVector.dy >= 0) {
-			velocity.y = Math.pow(_moveVector.dy, 2) * _moveVector.length;
-		}
-		else {
-			velocity.y = Math.pow(_moveVector.dy, 2) * _moveVector.length * -1;
-		}
+		
+			velocity.x = _moveVector.dx * _moveVector.length;
+			//velocity.x = Math.pow(_moveVector.dx, 2) * _moveVector.length;
+		
+		
+			velocity.y = _moveVector.dy * _moveVector.length;
+			//velocity.y = Math.pow(_moveVector.dy, 2) * _moveVector.length * -1;
 		super.update();
+		}
 	}
 	
 	public function onCollide(collidingSprite:NewtonianSprite) 
 	{
 		if (myController != null) myController.onCollide(collidingSprite);
+		
+		if (collidingSprite.rigid == true && this.rigid == true)
+		{
+			//_moveVector.zero();
+			FlxObject.separate(this, collidingSprite);
+			
+			var forceVector:FlxVector = _moveVector.clone();
+			var forceVectorOther:FlxVector = collidingSprite._moveVector.clone();
+			forceVector = forceVector.addNew(collidingSprite._moveVector);
+			forceVector.scale(collidingSprite._mass + _mass);
+			
+			collidingSprite.addForceVector(forceVector);
+			
+			forceVector.negate();
+			
+			addForceVector(forceVector);
+		}
+		//trace(forceVector);
 	}
 	
 	/*public function getScreenX()

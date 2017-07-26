@@ -1,6 +1,7 @@
 package objects;
 import flixel.util.FlxPoint;
 import flixel.FlxG;
+import flixel.util.FlxVector;
 
 /**
  * ...
@@ -13,23 +14,22 @@ class Bullet extends NewtonianSprite
 	
 	public function new(?X:Float = 0, ?Y:Float = 0) 
 	{
-		super(X, Y, 1e1);
+		super(X, Y, 5e-10);
 		gravityEnabled = false;
 		collisionsEnabled = true;
 		myController = null;
-		loadGraphic(AssetPaths.playerBullet__png);
+		loadGraphic(AssetPaths.shot1__png);
 		mySuperType = "Bullet";
 		wraps = true;
 		showInUI = false;
+		rigid = false;
 	}
 	
 	override public function update()
 	{
 		currentFlyTime += 1 / FlxG.updateFramerate; 
 		if (currentFlyTime > maxFlyTime) {
-			myGroup.remove(this);
-			destroy();
-			super.destroy();
+			killMe = true;
 		}
 		else{
 			super.update();
@@ -38,10 +38,10 @@ class Bullet extends NewtonianSprite
 	
 	override public function onCollide(collidedWith:NewtonianSprite) {
 		super.onCollide(collidedWith);
-		if(collidedWith.myType != "Bullet" && collidedWith.mySuperType != "Bullet"){
-			myGroup.remove(this);
-			destroy();
-			super.destroy();
+		if (collidedWith.myType != "Bullet" && collidedWith.mySuperType != "Bullet"){
+			_moveVector.scale(1e3);
+			collidedWith.addForceVector(_moveVector);
+			killMe = true;
 		}
 	}
 	

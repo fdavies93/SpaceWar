@@ -19,9 +19,9 @@ class CosmicBody extends NewtonianSprite
 {
 	public function new(?X:Float = 0, ?Y: Float = 0)
 	{
-		super(X, Y, 1e24);
+		super(X, Y, 1e6);
 		//3e23
-		loadGraphic(AssetPaths.miniSun__png);
+		loadGraphic(AssetPaths.blackhole__png);
 		collisionsEnabled = true;
 		mySuperType = "CosmicBody";
 		pixelPerfectRender = false;

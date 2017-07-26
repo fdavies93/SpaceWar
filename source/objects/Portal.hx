@@ -15,7 +15,7 @@ class Portal extends NewtonianSprite
 	public function new(X:Float, Y:Float) 
 	{
 		super(X, Y);
-		loadGraphic(AssetPaths.portal__png);
+		loadGraphic(AssetPaths.portalnice__png);
 		gravityEnabled = false;
 		collisionsEnabled = true;
 		myAllegiance = 0;

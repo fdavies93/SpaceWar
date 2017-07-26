@@ -11,10 +11,10 @@ class WeaponPeashooter extends WeaponComponent
 	{
 		super();
 		bulletFireAngle = 0;
-		bulletReloadTime = 1;
+		bulletReloadTime = 0.25;
 		bulletSpawnAngle = 0;
-		bulletSpeed = 300;
-		bulletSpawnDistance = 25;
+		bulletSpeed = 1000;
+		bulletSpawnDistance = 50;
 	}
 	
 }

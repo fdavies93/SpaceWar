@@ -4,9 +4,13 @@ import flixel.util.FlxPoint;
 import objects.Asteroid;
 import objects.CosmicBody;
 import objects.PlayerShip;
+import objects.Moon;
+import objects.Earth;
 import controllers.PlayerController;
 import controllers.RepeatController;
 import objects.Portal;
+import objects.SpaceStation;
+import weapons.WeaponPeashooter;
 
 /**
  * ...
@@ -31,13 +35,15 @@ class LevelSol extends Level
 	{
 		var testShip:objects.PlayerShip = new objects.PlayerShip(-5.1e3, 0);
 		var theController:controllers.PlayerController = new controllers.PlayerController();
+		var weapon:WeaponPeashooter = new WeaponPeashooter();
 		testShip.attachController(theController);
+		testShip.attachWeapon(weapon);
 		
 		var sol:CosmicBody = new CosmicBody(0, 0);
 		sol.name = "Sol";
 		sol.mass = 2e30;//pretty much the real mass
 		
-		var earth:CosmicBody = new CosmicBody( -1000, 0);
+		var earth:Earth = new Earth( -1000, 0);
 		earth.name = "Earth";
 		earth.mass = 6e24;//also the real mass
 		var earthOrbit:OrbitComponent = new OrbitComponent();
@@ -48,30 +54,28 @@ class LevelSol extends Level
 		earthOrbit.curAngle = Math.PI / 2;
 		earth.attachOrbit(earthOrbit);
 		
-		var moon:CosmicBody = new CosmicBody(-1250, 0);
+		var moon:Moon = new Moon(-1250, 0);
 		moon.name = "Moon";
-		moon.mass = 7.3e22;
 		var moonOrbit:OrbitComponent = new OrbitComponent();
 		moonOrbit.orbitedObject = earth;
-		moonOrbit.orbitRadius = new FlxPoint(40, 40);//384,400km
+		moonOrbit.orbitRadius = new FlxPoint(100, 100);//384,400km
 		moonOrbit.orbitSpeed = Math.PI / 30;
 		moonOrbit.orbitsClockwise = false;
 		moonOrbit.curAngle = Math.PI / 2;
 		moon.attachOrbit(moonOrbit);
 		
-		/*var curRock:Asteroid;
-		curRock = new Asteroid( -5e3, 0);
-		physicsGroup.add(curRock);
-		curRock = new Asteroid( 5e3, 0);
-		physicsGroup.add(curRock);*/
-		/*for (i in 0...5)
+		var station:SpaceStation = new SpaceStation(-5e3, 0);
+		station.name = "Asteroid Base";
+		
+		var curRock:Asteroid;
+		for (i in 0...5)
 		{
 			for (i2 in 0...5)
 			{
-				curRock = new Asteroid(-5e3 + (i * 100), -5e3 + (i2 * 100));
+				curRock = new Asteroid(-5e3 + (i * 150) + ((Math.random() - 0.5) * 60), -4e2 + (i2 * 150) + ((Math.random() - 0.5) * 60));
 				physicsGroup.add(curRock);
 			}
-		}*/
+		}
 		
 		/*var gOrbit:OrbitComponent = new OrbitComponent();
 		gOrbit.orbitCentre = new FlxPoint(0, 0);
@@ -87,6 +91,7 @@ class LevelSol extends Level
 		physicsGroup.add(testShip);
 		physicsGroup.add(sol);
 		physicsGroup.add(earth);
+		physicsGroup.add(station);
 		//physicsGroup.add(northGate);
 		
 		physicsGroup.add(moon);

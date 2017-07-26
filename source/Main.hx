@@ -7,6 +7,7 @@ import flash.events.Event;
 import flash.Lib;
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.FlxObject;
 
 class Main extends Sprite 
 {
@@ -28,6 +29,7 @@ class Main extends Sprite
 	public function new() 
 	{
 		super();
+		FlxObject.SEPARATE_BIAS = 0;
 		
 		if (stage != null) 
 		{

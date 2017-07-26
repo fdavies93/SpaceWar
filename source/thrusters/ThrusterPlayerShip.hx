@@ -11,9 +11,9 @@ class ThrusterPlayerShip extends ThrustComponent
 	{
 		super();
 		rotationSpeed = 180;
-		thrustForce = 5e6;
+		thrustForce = 5e3;
 		thrustMaxSpeed = 200;
-		boostForce = 1e6;
+		boostForce = 1e3;
 		boostMaxSpeed = 1000;
 	}
 	

@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.system.FlxSound;
 import flixel.util.FlxVector;
 import objects.Bullet;
 
@@ -18,10 +19,12 @@ class WeaponComponent
 	public var bulletFireAngle:Float;//as above
 	public var bulletReloadTime:Float;//in seconds
 	public var currentBulletReload:Float;//in seconds, counting down
+	private var laserSound:FlxSound;
 	
 	public function new() 
 	{
 		currentBulletReload = 0;
+		laserSound = FlxG.sound.load(AssetPaths.laser2__wav);
 	}
 	
 	public function attachToObject(attachingTo:NewtonianSprite) 
@@ -47,8 +50,10 @@ class WeaponComponent
 			var newBullet:objects.Bullet = new objects.Bullet((myObject.width/2) + myObject.x + bulletSpawnDistance * Math.cos(((myObject.angle + bulletSpawnAngle) / 360) * Math.PI * 2), (myObject.height/2) + myObject.y + bulletSpawnDistance * Math.sin(((myObject.angle + bulletSpawnAngle) / 360) * Math.PI * 2));
 			var bulletMotionVector:FlxVector = new FlxVector();
 			bulletMotionVector.length = bulletSpeed;
+			laserSound.play(true);
 			bulletMotionVector.degrees = myObject.angle + bulletFireAngle;
 			newBullet.myGroup = myObject.myGroup;
+			newBullet.angle = myObject.angle;
 			newBullet.addVelocityVector(bulletMotionVector);
 			myObject.myGroup.add(newBullet);
 			currentBulletReload = bulletReloadTime;
